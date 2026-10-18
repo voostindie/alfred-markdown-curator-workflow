@@ -44,9 +44,9 @@ def process_item(property_value):
       | (if property_value then gsub("PROPERTY"; property_value) else . end)
     ) as $title |
     ($raw_url
-      | gsub("NAME"; $document_name)
-      | gsub("PATH"; $document_path)
-      | (if property_value then gsub("PROPERTY"; property_value) else . end)
+      | gsub("NAME"; $document_name | @uri)
+      | gsub("PATH"; $document_path | @uri)
+      | (if property_value then gsub("PROPERTY"; property_value | @uri) else . end)
     ) as $url |
     {
       title: $title,
@@ -82,7 +82,7 @@ def process_item(property_value):
     + {
       variables: {
         APPLICATION: ($item.application // ""),
-        URL: ($url | @uri // "")
+        URL: ($url // "")
       }
     }
   end;
