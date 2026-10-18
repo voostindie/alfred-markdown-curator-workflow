@@ -444,6 +444,8 @@
 				<integer>0</integer>
 				<key>modifiersubtext</key>
 				<string></string>
+				<key>sourceoutputuid</key>
+				<string>E4E90D25-720F-40DB-B30C-577C3CFC3BCD</string>
 				<key>vitoclose</key>
 				<false/>
 			</dict>
@@ -455,7 +457,7 @@
 				<key>modifiersubtext</key>
 				<string></string>
 				<key>sourceoutputuid</key>
-				<string>7E76C11A-DE06-4DDC-B501-12700FE2359C</string>
+				<string>43D69B90-E2E8-4CFF-B426-E7734516FBB1</string>
 				<key>vitoclose</key>
 				<false/>
 			</dict>
@@ -978,6 +980,20 @@
 				<array>
 					<dict>
 						<key>inputstring</key>
+						<string>{var:URL}</string>
+						<key>matchcasesensitive</key>
+						<false/>
+						<key>matchmode</key>
+						<integer>1</integer>
+						<key>matchstring</key>
+						<string></string>
+						<key>outputlabel</key>
+						<string>url</string>
+						<key>uid</key>
+						<string>E4E90D25-720F-40DB-B30C-577C3CFC3BCD</string>
+					</dict>
+					<dict>
+						<key>inputstring</key>
 						<string>{var:APPLICATION}</string>
 						<key>matchcasesensitive</key>
 						<false/>
@@ -988,13 +1004,13 @@
 						<key>outputlabel</key>
 						<string>application</string>
 						<key>uid</key>
-						<string>7E76C11A-DE06-4DDC-B501-12700FE2359C</string>
+						<string>43D69B90-E2E8-4CFF-B426-E7734516FBB1</string>
 					</dict>
 				</array>
 				<key>elselabel</key>
-				<string>url</string>
+				<string>application</string>
 				<key>hideelse</key>
-				<false/>
+				<true/>
 			</dict>
 			<key>type</key>
 			<string>alfred.workflow.utility.conditional</string>
@@ -1034,10 +1050,14 @@
 				<false/>
 				<key>variables</key>
 				<dict>
+					<key>APPLICATION</key>
+					<string>/Applications/Obsidian.app</string>
 					<key>DOCUMENT_NAME</key>
 					<string>{var:split1}</string>
 					<key>DOCUMENT_PATH</key>
 					<string>{var:split2}</string>
+					<key>EMAIL</key>
+					<string>{var:split4}</string>
 					<key>OMNIFOCUS_URL</key>
 					<string>{var:split3}</string>
 				</dict>
@@ -2261,39 +2281,22 @@ Links:
 			<key>config</key>
 			<dict>
 				<key>default</key>
-				<false/>
+				<string></string>
 				<key>required</key>
 				<false/>
-				<key>text</key>
-				<string></string>
+				<key>trim</key>
+				<true/>
+				<key>verticalsize</key>
+				<integer>9</integer>
 			</dict>
 			<key>description</key>
-			<string></string>
+			<string>JSON configuration object. Use the DEFAULT_ACTIONS value in the defaults scripts as a basis if you want to override it.</string>
 			<key>label</key>
-			<string>Enable support for Marked</string>
-			<key>type</key>
-			<string>checkbox</string>
-			<key>variable</key>
-			<string>MARKED_APP_ENABLED</string>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>default</key>
-				<false/>
-				<key>required</key>
-				<false/>
-				<key>text</key>
-				<string></string>
-			</dict>
-			<key>description</key>
 			<string></string>
-			<key>label</key>
-			<string>Enable support for iA Writer</string>
 			<key>type</key>
-			<string>checkbox</string>
+			<string>textarea</string>
 			<key>variable</key>
-			<string>IA_WRITER_ENABLED</string>
+			<string>ACTIONS</string>
 		</dict>
 	</array>
 	<key>version</key>

@@ -1,68 +1,103 @@
 #!/bin/zsh --no-rcs
-# Lists actions for a document in the vault.
-# This script requires 2 environment variables to be set: "DOCUMENT_NAME" and
-# "DOCUMENT_PATH", these are exposed as variables by "list-documents".
-# This script applies to all categories of documents available. The first
-# couple of actions are generic; the other actions depend on the type of
-# properties that accompany the document; these properties are all the front
-# matter properties in the document itself. E.g. the "omnifocus" property is
-# added to all project documents when OmniFocus is configured in the vault.
+# Lists actions for a document.
+#
+# This script requires either 2 program arguments or 2 environment variables to
+# be set: "DOCUMENT_NAME" and "DOCUMENT_PATH". In the Alfred workflow these are
+# exposed as variables by "list-documents".
+#
+# Additionally the script supports the environment variable "ACTIONS". It must
+# contain a JSON object that defines all actions that can be performed on a
+# document. If not provided, the script falls back on the DEFAULT_ACTIONS
+# from the "defaults" script.
 source ${0:a:h}/defaults
-require_env DOCUMENT_NAME
-require_env DOCUMENT_PATH
+if (( # != 2 )); then
+  if [[ ! -v DOCUMENT_NAME ]]; then
+    print >&2 "Document name missing"
+    exit 1
+  fi
+  if [[ ! -v DOCUMENT_PATH ]]; then
+    print >&2 "Document path missing"
+    exit 1
+  fi
+else
+  DOCUMENT_NAME="$1"
+  DOCUMENT_PATH="$2"
+fi
 init_active_curator
-jq -n '
+jq -n \
+  --argjson actions "$ACTIONS" \
+  --arg document_name "$DOCUMENT_NAME" \
+  --arg document_path "$DOCUMENT_PATH" \
+  '
+def process_item(property_value):
+  . as $item |
+  if ($ENV.APPLICATION | length > 0)
+    and ($item.application | select(. != null) | . == $ENV.APPLICATION)
+  then
+    empty
+  else
+    ($item.title // "") as $raw_title |
+    ($item.url // "") as $raw_url |
+    ($raw_title
+      | gsub("NAME"; $document_name)
+      | gsub("PATH"; $document_path)
+      | (if property_value then gsub("PROPERTY"; property_value) else . end)
+    ) as $title |
+    ($raw_url
+      | gsub("NAME"; $document_name)
+      | gsub("PATH"; $document_path)
+      | (if property_value then gsub("PROPERTY"; property_value) else . end)
+    ) as $url |
+    {
+      title: $title,
+      arg: (
+        if ($url | length > 0) then
+          $url
+        elif $item.application then
+          $document_path
+        else
+          ""
+        end
+      )
+    }
+    + (
+      if $item.icon then
+        {
+          icon: {
+            path: (
+              if ($item.icon | startswith("/")) then
+                $item.icon
+              elif $item.application then
+                "\($item.application)/Contents/Resources/\($item.icon)"
+              else
+                $item.icon
+              end
+            )
+          }
+        }
+      else
+        {}
+      end
+    )
+    + {
+      variables: {
+        APPLICATION: ($item.application // ""),
+        URL: ($url | @uri // "")
+      }
+    }
+  end;
+
 {
   items: [
-    {
-      arg: "file://\($ENV.DOCUMENT_PATH)",
-      title: "Open in default editor",
-      icon: {
-        type: "fileicon",
-        path: $ENV.DOCUMENT_PATH
-	    }
-    },
-    ($ENV.MARKED_APP_ENABLED | select(. == "1") | {
-      arg: $ENV.DOCUMENT_PATH,
-      title: "Open in Marked",
-      variables: {
-        APPLICATION: "Marked.app"
-      },
-      icon: {
-        path: "/Applications/Marked.app/Contents/Resources/AppIcon.icns"
-      }
-    }),
-    ($ENV.IA_WRITER_ENABLED | select(. == "1") | {
-      arg: $ENV.DOCUMENT_PATH,
-      title: "Open in iA Writer",
-      variables: {
-        APPLICATION: "iA Writer.app"
-      },
-      icon: {
-        path: "/Applications/iA Writer.app/Contents/Resources/Writer.icns"
-      }
-    }),
-    {
-      arg: @uri "alfred://runtrigger/nl.ulso.curator/links/?argument=\($ENV.DOCUMENT_NAME)",
-      title: "Show links",
-      icon: {
-        path: "/Applications/Safari.app/Contents/Resources/AppIconUpdated.icns"
-      }
-    },
-    {
-      arg: @uri "alfred://runtrigger/nl.ulso.curator/file/?argument=\($ENV.DOCUMENT_PATH)",
-      title: "Show file actions",
-      icon: {
-        path: "/Applications/Alfred 5.app/Contents/Resources/appicon.icns"
-      }
-    },
-    ($ENV.OMNIFOCUS_URL | select(. | length > 0) | {
-      arg: .,
-      title: "Open project in OmniFocus",
-      icon: {
-        path: "/Applications/OmniFocus.app/Contents/Resources/AppIcon.icns"
-      }
-    })
+    ($actions.document[]? | process_item(null)),
+    (
+      ($actions.environment // {}) |
+      to_entries[]? |
+      .key as $environment_variable | .value as $item |
+      ($ENV[$environment_variable] // empty) as $property_value |
+      select($property_value | length > 0) |
+      ($item | process_item($property_value))
+    )
   ]
 }
 '

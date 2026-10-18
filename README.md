@@ -21,18 +21,21 @@ This repository contains a workflow for Alfred that uses the embedded HTTP serve
     - *Shared prefix* + `C`: Contacts
     - …(the same categories as above)
 - Act on a single document. Supported actions are:
-    - Opening it in the default editor
-    - Optionally, opening it in [Marked](https://markedapp.com), if enabled in the settings
-    - Optionally, opening it in [iA Writer](https://ia.net/writer), if enabled in the settings
-    - Browsing external links for the document
+    - Opening [Obsidian](https://obsidian.md)
+    - Opening [Marked](https://markedapp.com)
+    - Opening [iA Writer](https://ia.net/writer)
+    - Browsing external links
     - Applying Alfred’s built-in file actions
-    - Optionally, opening it in [OmniFocus](https://www.omnigroup.com/omnifocus), if the document refers to a project in it.
+    - Opening [OmniFocus](https://www.omnigroup.com/omnifocus), if the document refers to a project.
+    - Sending an e-mail, if the document refers to an e-mail address.
 - Act on the active document in Obsidian using my [Alfred Trigger](https://community.obsidian.md/plugins/alfred-trigger) plugin.
     - Run the “Trigger Alfred” command (I have configured Command + Option + `A`) and it pops up all actions from the previous bullet.
 
+This list of actions is configurable. See the technical details below. 
+
 *Hyper* is the combination of Control + Option + Shift + Command. That’s not an easy key combination to hit, I know. It’s also a combination that no application uses. I use the free [Karabiner-Elements](https://karabiner-elements.pqrs.org) with the “Change caps lock to hyper key” to make using it a breeze.
 
-The *Shared prefix* is a local setting in Alfred. For me it’s a semicolon, “;”. Because in any language there’s nothing but a space following it.
+The *Shared prefix* is a local setting in Alfred. For me, it’s a semicolon, `;`. Because in any language there’s nothing but a space following it.
 
 ## Technical details
 
@@ -42,16 +45,18 @@ The scripts rely on a number of environment variables:
 
 - `URL`: URL to the HTTP endpoints of the Markdown Curator.
 - `CONFIG`: path to the file containing the name of the active curator.
-- `ENABLE_MARKED_APP`: whether to enable support for Marked.
-- `ENABLE_IA_WRITER`: whether the enable support for iA Writer.
+- `ACTIONS`: JSON object with actions that can be applied to documents.
 
-If not set, the scripts use defaults as defined in the aptly named `defaults` script sourced by all other scripts. 
+Each of the variables can be overridden by supplying them in the Alfred workflow.
+If not set, the scripts use defaults as defined in the aptly named `defaults` script sourced by all other scripts.
 
 Note: I’m not proficient in ZSH, nor do I have the ambition to be. The scripts are far from pretty. The approach in these scripts is to be DRY and to bail out ASAP when something is wrong. Error handling can be better.
 
 ## How to install
 
 Download the latest `Markdown.Curator.alfredworkflow` file from the [releases](https://github.com/voostindie/alfred-markdown-curator-workflow/releases/latest) and install it by double-clicking it.
+
+Be aware that keywords, snippets and hotkeys are empty when first installed. Configure them in the workflow yourself.
 
 ## Historical background
 

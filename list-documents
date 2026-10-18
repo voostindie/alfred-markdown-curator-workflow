@@ -33,6 +33,10 @@ jq --arg document_path "$DOCUMENT_PATH" '
              then {OMNIFOCUS_URL: $document.properties.omnifocus}
              else {}
              end)
+          + (if $document.properties.e_mail
+             then {EMAIL: $document.properties.e_mail}
+             else {}
+             end)
         )
       }
     ),

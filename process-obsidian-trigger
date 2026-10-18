@@ -13,5 +13,6 @@ fi
 echo -n "$1" | base64 -d | jq -r '
   .name,
   .path,
-  (.properties.omnifocus // empty)
+  (.properties["omnifocus"] // ""),
+  (.properties["e-mail"] // "")
 '

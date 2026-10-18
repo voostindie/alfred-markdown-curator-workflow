@@ -1,21 +1,54 @@
-if [[ ! -v URL ]]; then
-	URL="http://localhost:7767"
-fi
-if [[ ! -v CONFIG ]]; then
-	CONFIG="$HOME/.markdown-curator"
-fi
+DEFAULT_URL="http://localhost:7767"
+DEFAULT_CONFIG="$HOME/.markdown-curator"
+DEFAULT_ACTIONS='{
+  "document": [
+    {
+      "title": "Open in Obsidian",
+      "application": "/Applications/Obsidian.app",
+      "icon": "icon.icns"
+    },
+    {
+      "title": "Open in Marked",
+      "application": "/Applications/Marked.app",
+      "icon": "AppIcon.icns"
+    },
+    {
+      "title": "Open in iA Writer",
+      "application": "/Applications/iA Writer.app",
+      "icon": "Writer.icns"
+    },
+    {
+      "title": "Browse links",
+      "url": "alfred://runtrigger/nl.ulso.curator/links/?argument=NAME",
+      "application": "/Applications/Safari.app",
+      "icon": "AppIconUpdated.icns"
+    },
+    {
+      "title": "File actions",
+      "url": "alfred://runtrigger/nl.ulso.curator/file/?argument=PATH",
+      "application": "/Applications/Alfred 5.app",
+      "icon": "appicon.icns"
+    }
+  ],
+  "environment": {
+    "OMNIFOCUS_URL": {
+      "title": "Open in OmniFocus",
+      "url": "PROPERTY",
+      "application": "/Applications/OmniFocus.app",
+      "icon": "AppIcon.icns"
+    },
+    "EMAIL": {
+      "title": "Send an e-mail",
+      "url": "mailto:PROPERTY",
+      "application": "/System/Applications/Mail.app",
+      "icon": "ApplicationIcon.icns"
+    }
+  }
+}'
+URL="${URL:-$DEFAULT_URL}"
+CONFIG="${CONFIG:-$DEFAULT_CONFIG}"
+ACTIONS="${ACTIONS:-$DEFAULT_ACTIONS}"
 
 init_active_curator () {
-	if [[ ! -a $CONFIG ]]; then
-		print >&2 "Active curator not set"
-		exit 1
-	fi
 	CURATOR=$(cat $CONFIG)
-}
-
-require_env () {
-    if [[ ! -v $1 ]]; then
-        print >&2 "Required environment variable missing: $1"
-        exit 1
-    fi
 }
