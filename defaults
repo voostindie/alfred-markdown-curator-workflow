@@ -26,7 +26,7 @@ DEFAULT_ACTIONS='{
     {
       "title": "File actions",
       "url": "alfred://runtrigger/nl.ulso.curator/file/?argument=PATH",
-      "application": "/Applications/Alfred 5.app",
+      "application": "/Applications/Alfred 6.app",
       "icon": "appicon.icns"
     }
   ],
